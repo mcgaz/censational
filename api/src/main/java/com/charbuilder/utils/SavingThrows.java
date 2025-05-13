@@ -1,5 +1,10 @@
-package main.java.com.charbuilder.utils;
+package com.charbuilder.utils;
 
 public enum SavingThrows {
-    STRENGTH, DEXTERITY, CONSTITUTION, INTELLIGENCE, WISDOM, CHARISMA;
+    STRENGTH,
+    DEXTERITY,
+    CONSTITUTION,
+    INTELLIGENCE,
+    WISDOM,
+    CHARISMA;
 }

@@ -1,4 +1,4 @@
-package main.java.com.charbuilder.dice;
+package com.charbuilder.dice;
 
 public class D8 extends BaseDie{
 

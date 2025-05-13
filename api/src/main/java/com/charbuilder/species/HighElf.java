@@ -1,14 +1,14 @@
-package main.java.com.charbuilder.species;
+package com.charbuilder.species;
 
 public class HighElf extends Elf {
 
-    public HighElf () {
-        super();
-        this.increaseIntelligence(2);
-        this.isProficient("longsword");
-        this.isProficient("shortsword");
-        this.isProficient("shortbow");
-        this.isProficient("longbow");
-    }
+//    public HighElf () {
+//        super();
+//        this.increaseIntelligence(2);
+//        this.isProficient("longsword");
+//        this.isProficient("shortsword");
+//        this.isProficient("shortbow");
+//        this.isProficient("longbow");
+//    }
 
 }

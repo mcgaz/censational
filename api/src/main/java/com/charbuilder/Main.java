@@ -1,10 +1,14 @@
-package main.java.com.charbuilder;
+package com.charbuilder;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class Main {
-
-//    public final long seed = 123L;
-
     public static void main(String[] args) {
+//        Character testCharacter = new Character();
+//        System.out.println(testCharacter);
+        SpringApplication.run(Main.class, args);
 
         }
     }

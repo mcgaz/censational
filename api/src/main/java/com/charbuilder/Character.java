@@ -1,25 +1,31 @@
-package main.java.com.charbuilder;
+package com.charbuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import main.java.com.charbuilder.dice.*;
-import main.java.com.charbuilder.species.Role;
-import main.java.com.charbuilder.species.Species;
-import main.java.com.charbuilder.utils.Background;
-import main.java.com.charbuilder.utils.Size;
+import com.charbuilder.dice.D6;
+import com.charbuilder.dice.D8;
+import com.charbuilder.dice.D12;
+import com.charbuilder.dice.D20;
+import com.charbuilder.species.Role;
+import com.charbuilder.species.Species;
+import com.charbuilder.utils.*;
+import com.charbuilder.dice.Die;
 
 public class Character {
 
     public Species species;
     public Role role;
     public Size size;
+    public int speed;
 
     public int level;
     public int baseArmourClass;
     public Die hitDie;
+    public int hitDice;
     public int hitPoints;
+    public int maxHitPoints;
     public Boolean hidden;
     public Background background;
 
@@ -37,8 +43,10 @@ public class Character {
     public int wisdomModifier;
     public int charismaModifier;
 
-    public ArrayList<String> proficiencies;
-    public ArrayList<String> savingThrows;
+    public ArrayList<Proficiencies> skillProficiencies;
+    public ArrayList<Proficiencies> armourProficiencies;
+    public ArrayList<Proficiencies> weaponProficiencies;
+    public ArrayList<SavingThrows> savingThrowProficiencies;
 
 //    public int strengthAthletics;
 //    public int dexterityAcrobatics;
@@ -47,21 +55,23 @@ public class Character {
 //    public int intelligenceArcana;
 //    public int intelligenceHistory;
 //    public int intelligenceInvestigation;
-//    public int intelligenceNature = 0;
-//    public int intelligenceReligion = 0;
-//    public int wisdomAnimalHandling = 0;
-//    public int wisdomInsight = 0;
-//    public int wisdomMedicine = 0;
-//    public int wisdomPerception = 0;
-//    public int wisdomSurvival = 0;
-//    public int charismaDeception = 0;
-//    public int charismaIntimidation = 0;
-//    public int charismaPerformance = 0;
-//    public int charismaPersuasion = 0;
-
+//    public int intelligenceNature;
+//    public int intelligenceReligion;
+//    public int wisdomAnimalHandling;
+//    public int wisdomInsight;
+//    public int wisdomMedicine;
+//    public int wisdomPerception;
+//    public int wisdomSurvival;
+//    public int charismaDeception;
+//    public int charismaIntimidation;
+//    public int charismaPerformance;
+//    public int charismaPersuasion;
 
     public Character() {
-        new Character(getRandomSpecies(), getRandomRole(), getRandomBackground(), D20.rollOne());
+        this.species = getRandomSpecies();
+        this.role = getRandomRole();
+
+        new Character(this.species, this.role, getRandomBackground(), getRandomLevel());
     }
 
     public Character(Species species, Role role, Background background, int level){
@@ -70,12 +80,13 @@ public class Character {
         this.level = level;
         this.background = background;
         this.size = species.size;
-        this.strength = species.baseStrength;
-        this.dexterity = species.baseDexterity;
-        this.constitution = species.baseConstitution;
-        this.intelligence = species.baseIntelligence;
-        this.wisdom = species.baseWisdom;
-        this.charisma = species.baseCharisma;
+        this.speed = species.speed;
+        this.strength = creationRoll() + species.baseStrength;
+        this.dexterity = creationRoll() + species.baseDexterity;
+        this.constitution = creationRoll() + species.baseConstitution;
+        this.intelligence = creationRoll() + species.baseIntelligence;
+        this.wisdom = creationRoll() + species.baseWisdom;
+        this.charisma = creationRoll() + species.baseCharisma;
         this.strengthModifier = getAbilityModifier(strength);
         this.dexterityModifier = getAbilityModifier(dexterity);
         this.constitutionModifier = getAbilityModifier(constitution);
@@ -83,12 +94,27 @@ public class Character {
         this.wisdomModifier = getAbilityModifier(wisdom);
         this.charismaModifier = getAbilityModifier(charisma);
         this.hitDie = role.hitDie();
+        this.hitDice = level;
         this.hitPoints = getHitPoints(role.hitDie(), level);
+        this.maxHitPoints = this.hitPoints;
         this.baseArmourClass = 10 + dexterityModifier;
+        this.skillProficiencies = background.skillProficiencies();
 
         if (this.species == Species.HILL_DWARF) { increaseHitPoints(level); }
 
         if (this.role == Role.BARBARIAN) { this.baseArmourClass += constitutionModifier; }
+
+        // TODO impose ability limits
+        // TODO include half elf 2 random proficiencies
+        // TODO name generator
+        // TODO halfling luck
+        // TODO half orc relentless endurance, savage attacks
+        // TODO barbarian reckless attack
+        // TODO species resistances / advantages / disadvantages
+        // TODO random class skill choice
+        // TODO resolve background / class random skill choice clash
+        // TODO barbarian unarmoured AC
+        // TODO format response json
 
     }
 
@@ -118,25 +144,50 @@ public class Character {
 //        if (this.role == Role.BARBARIAN) { this.baseArmourClass += constitutionModifier; }
 //    }
 
+    private int creationRoll(){
+        int result;
+        try {
+            result = Arrays.stream(D6.rollHighest(4, 3)).sum();
+            if (result < 3 || result > 18) {throw new IllegalStateException();}
+            return result;
+
+        } catch (IllegalStateException e){
+            System.out.println("Creation Roll can't be less than 3 or greater than 18: " + e.getMessage());
+            System.out.println("Defaulting to 10");
+            result = 10;
+            return result;
+        }
+    }
+
     private Species getRandomSpecies() {
         final Random RANDOM = new Random();
         Species[] speciesArray = Species.values();
         int randomIndex = RANDOM.nextInt(speciesArray.length);
-        return speciesArray[randomIndex];
+        species = speciesArray[randomIndex];
+        return species;
     }
 
     private Role getRandomRole() {
         final Random RANDOM = new Random();
         Role[] rolesArray = Role.values();
         int randomIndex = RANDOM.nextInt(rolesArray.length);
-        return rolesArray[randomIndex];
+//        System.out.println(randomIndex);
+        role = rolesArray[randomIndex];
+        return role;
     }
 
     private Background getRandomBackground() {
         final Random RANDOM = new Random();
         Background[] backgroundsArray = Background.values();
         int randomIndex = RANDOM.nextInt(backgroundsArray.length);
-        return backgroundsArray[randomIndex];
+        background = backgroundsArray[randomIndex];
+        return background;
+    }
+
+    private int getRandomLevel() {
+        level = D20.rollOne();
+//        System.out.println("RANDOM LEVEL: " + level);
+        return level;
     }
 
     private int getHitPoints(Die hitDie, int level) {
@@ -159,6 +210,8 @@ public class Character {
         }
     }
 
+
+
     public int getAbilityModifier (double modifier) {
         return (int) Math.floor((modifier - 10) / 10);
     }
@@ -167,7 +220,7 @@ public class Character {
 
     }
 
-    public void isProficient(String proficiency) {
+    public void isProficient(Skills proficiency) {
         this.proficiencies.add(proficiency);
     }
 
@@ -203,6 +256,12 @@ public class Character {
         this.charisma += charisma;
     }
 
+    @Override
+    public String toString() {
+        return "Species: " + this.species + "\n" +
+                "Role: " + this.role + "\n" +
+                "Level: " + this.level + "\n";
+    }
 
 }
 

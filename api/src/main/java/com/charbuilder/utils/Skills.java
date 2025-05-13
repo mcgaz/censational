@@ -1,6 +1,6 @@
-package main.java.com.charbuilder.utils;
+package com.charbuilder.utils;
 
-public enum Skills {
+public enum Skills implements Proficiencies {
     INSIGHT,
     RELIGION,
     DECEPTION,
@@ -8,6 +8,7 @@ public enum Skills {
     ANIMAL_HANDLING,
     SURVIVAL,
     HISTORY,
+    PERCEPTION,
     PERSUASION,
     ARCANA,
     ATHLETICS,

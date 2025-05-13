@@ -1,12 +1,12 @@
-package main.java.com.charbuilder.dice;
+package com.charbuilder.dice;
 
 import java.util.Arrays;
 import java.util.Random;
 
 public class BaseDie {
+    private static final Random rand = new Random();
+
     public static int[] roll (int dieType, int numberOfDiceRolled) {
-        long seed = 123L;
-        Random rand = new Random(seed);
         int[] diceArrayRolled = new int[numberOfDiceRolled];
 
         for(int i = 0; i < numberOfDiceRolled; i++) {
@@ -35,8 +35,8 @@ public class BaseDie {
     }
 
     public static int rollOne (int dieType) {
-        long seed = 123L;
-        Random rand = new Random(seed);
-        return rand.nextInt(dieType) + 1;
+        int result = rand.nextInt(dieType) + 1;
+//        System.out.println("RESULT" + result);
+        return result;
     }
 }

@@ -1,5 +1,4 @@
 package com.charbuilder.utils;
 
-public class Utils {
-
+public interface Proficiencies {
 }
