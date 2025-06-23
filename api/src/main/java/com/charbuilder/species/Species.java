@@ -48,7 +48,6 @@ public enum Species {
         this.speed = speed;
         this.speciesSkills = Arrays.asList(skills);
 
-//        public
 
     }
 

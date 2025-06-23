@@ -47,6 +47,13 @@
             <version>2.19.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>wordnet-random-name</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

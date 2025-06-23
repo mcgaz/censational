@@ -2,6 +2,7 @@ package com.charbuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import com.charbuilder.dice.D6;
@@ -12,9 +13,14 @@ import com.charbuilder.species.Role;
 import com.charbuilder.species.Species;
 import com.charbuilder.utils.*;
 import com.charbuilder.dice.Die;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 
 public class Character {
 
+    public String name;
     public Species species;
     public Role role;
     public Size size;
@@ -28,6 +34,7 @@ public class Character {
     public int maxHitPoints;
     public Boolean hidden;
     public Background background;
+    public int attacks;
 
     public int strength;
     public int dexterity;
@@ -68,13 +75,13 @@ public class Character {
 //    public int charismaPersuasion;
 
     public Character() {
-        this.species = getRandomSpecies();
-        this.role = getRandomRole();
 
-        new Character(this.species, this.role, getRandomBackground(), getRandomLevel());
+        this(getRandomName(), getRandomSpecies(), getRandomRole(), getRandomBackground(), getRandomLevel());
+
     }
 
-    public Character(Species species, Role role, Background background, int level){
+    public Character(String name, Species species, Role role, Background background, int level){
+        this.name = name;
         this.species = species;
         this.role = role;
         this.level = level;
@@ -104,9 +111,9 @@ public class Character {
 
         if (this.role == Role.BARBARIAN) { this.baseArmourClass += constitutionModifier; }
 
-        // TODO impose ability limits
-        // TODO include half elf 2 random proficiencies
-        // TODO name generator
+
+        // TODO implement logging
+        // TODO unit tests
         // TODO halfling luck
         // TODO half orc relentless endurance, savage attacks
         // TODO barbarian reckless attack
@@ -115,6 +122,9 @@ public class Character {
         // TODO resolve background / class random skill choice clash
         // TODO barbarian unarmoured AC
         // TODO format response json
+        // TODO call out to name generator
+        // TODO impose ability limits
+        // TODO include half elf 2 random proficiencies
 
     }
 
@@ -159,35 +169,38 @@ public class Character {
         }
     }
 
-    private Species getRandomSpecies() {
+    private static String getRandomName() {
+        final Random RANDOM = new Random();
+        String[] nameArray = {"Angry Fletcher", "Tired Cook", "Sassy Duck", "Handsy Priest"};
+        int randomIndex = RANDOM.nextInt(nameArray.length);
+        return nameArray[randomIndex];
+    }
+
+    private static Species getRandomSpecies() {
         final Random RANDOM = new Random();
         Species[] speciesArray = Species.values();
         int randomIndex = RANDOM.nextInt(speciesArray.length);
-        species = speciesArray[randomIndex];
-        return species;
+        return speciesArray[randomIndex];
     }
 
-    private Role getRandomRole() {
+    private static Role getRandomRole() {
         final Random RANDOM = new Random();
         Role[] rolesArray = Role.values();
         int randomIndex = RANDOM.nextInt(rolesArray.length);
 //        System.out.println(randomIndex);
-        role = rolesArray[randomIndex];
-        return role;
+        return rolesArray[randomIndex];
     }
 
-    private Background getRandomBackground() {
+    private static Background getRandomBackground() {
         final Random RANDOM = new Random();
         Background[] backgroundsArray = Background.values();
         int randomIndex = RANDOM.nextInt(backgroundsArray.length);
-        background = backgroundsArray[randomIndex];
-        return background;
+        return backgroundsArray[randomIndex];
     }
 
-    private int getRandomLevel() {
-        level = D20.rollOne();
+    private static int getRandomLevel() {
 //        System.out.println("RANDOM LEVEL: " + level);
-        return level;
+        return D20.rollOne();
     }
 
     private int getHitPoints(Die hitDie, int level) {
@@ -220,8 +233,20 @@ public class Character {
 
     }
 
-    public void isProficient(Skills proficiency) {
-        this.proficiencies.add(proficiency);
+    public void isProficientSkill(Skills proficiency) {
+        this.skillProficiencies.add(proficiency);
+    }
+
+    public void isProficientWeapon(Weapons proficiency) {
+        this.weaponProficiencies.add(proficiency);
+    }
+
+    public void isProficientArmour(Armour proficiency) {
+        this.armourProficiencies.add(proficiency);
+    }
+
+    public void isProficientSavingThrow(SavingThrows proficiency) {
+        this.savingThrowProficiencies.add(proficiency);
     }
 
     public void levelUp(int level) {
@@ -256,11 +281,15 @@ public class Character {
         this.charisma += charisma;
     }
 
-    @Override
-    public String toString() {
-        return "Species: " + this.species + "\n" +
-                "Role: " + this.role + "\n" +
-                "Level: " + this.level + "\n";
+//    @Override
+//    public String toString() {
+//        return "Species: " + this.species + "\n" +
+//                "Role: " + this.role + "\n" +
+//                "Level: " + this.level + "\n";
+//    }
+    public String toJson() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
     }
 
 }

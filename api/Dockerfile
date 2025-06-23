@@ -9,8 +9,3 @@ WORKDIR /opt/app
 COPY target/ .
 
 CMD ["java", "-jar target/$(APP)-$(VERSION).jar"]
-
-
-
-^[]±§():_{}@!../;\|
-^[]±§():_{}@!../;\|
